@@ -1,8 +1,10 @@
 package com.company.mouseListeners;
 
+import com.company.entities.EmptyBox;
 import com.company.entities.Wall;
 import com.company.view.Board;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class WallTemplate extends MouseListenerTemplate{
@@ -26,7 +28,13 @@ public class WallTemplate extends MouseListenerTemplate{
     public void mouseDragged(MouseEvent e){
         if(canPlace){
             if(!setStart.isActive && !setEnd.isActive){
-                super.mousePressed(e);
+                Point position = calculatePosition(e);
+                if(board.getButtons()[position.y][position.x].getClass() == EmptyBox.class){
+                    board.getButtons()[position.y][position.x] = toSet;
+                    toSet.setX(position.x);
+                    toSet.setY(position.y);
+                    board.repaint();
+                }
             }
         }
     }
