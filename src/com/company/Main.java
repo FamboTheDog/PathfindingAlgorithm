@@ -7,7 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
-
+    /*
+    * TODO:
+    *  - checkbox to allow or disallow diagonals
+    *
+    * */
     public static void main(String[] args) {
         final String title = "Pathfinder";
         JFrame frame = new JFrame(title);

@@ -1,9 +1,6 @@
 package com.company.algorithms;
 
-import com.company.entities.End;
-import com.company.entities.Entity;
-import com.company.entities.Start;
-import com.company.entities.Wall;
+import com.company.entities.*;
 import com.company.view.Board;
 
 import java.awt.*;
@@ -11,52 +8,68 @@ import java.util.*;
 
 public class AStar {
 
-    private Board board;
+    private final Board board;
 
     public AStar(Board board){
         this.board = board;
     }
 
-    public Entity aStar(Start start, End end){
+    public void aStar(Start start, End end){
         ArrayList<Entity> open = new ArrayList<>();
-        open.add(start);
+        ArrayList<Entity> closed = new ArrayList<>();
         start.setG(0);
-        start.setF(start.calculateHeuristics(end));
+        start.setF(0);
+
+        open.add(start);
 
         while(!open.isEmpty()){
             Entity currentEntity = calculateLowestF(open);
-            if(currentEntity == end) return currentEntity;
             open.remove(currentEntity);
+            closed.add(currentEntity);
 
-            int[][] adjacentTiles = {{1, 0}, {0, 1}, {-1,0}, {0,-1}, {-1,-1}, {1, 1}, {-1,1}, {1,-1}};
+            if(currentEntity == end) {
+                board.startTimer(closed, currentEntity);
+                return;
+            }
+
+            int[][] adjacentTiles = {
+                    {1, 0}, {0, 1}, {-1,0}, {0,-1},  // normal distance
+                    {-1,-1}, {1, 1}, {-1,1}, {1,-1}  // diagonal distance
+            };
             Point currentLocation = new Point(currentEntity.getX(), currentEntity.getY());
+            int counter = 0;
             for (int[] cur : adjacentTiles) {
-                if(currentLocation.x + cur[0] < 0 ||
-                   currentLocation.x + cur[0] > board.getButtons()[0].length - 1 ||
-                   currentLocation.y + cur[1] < 0 ||
-                   currentLocation.y + cur[1] > board.getButtons().length - 1) continue;
+                counter++;
+                int x = currentLocation.x + cur[0];
+                int y = currentLocation.y + cur[1];
+                if(isNotInBounds(x, y)) continue;
 
-                Entity n = board.getButtons()[currentLocation.y + cur[1]][ currentLocation.x + cur[0]];
-                System.out.println(n);
+                Entity n = board.getButtons()[y][x];
+
+                if(closed.contains(n)) continue;
                 if(n.getClass() == Wall.class) continue;
-                int totalWeight = currentEntity.getG() + n.getD();
+
+                double distance = counter < 4 ? n.getD() : n.getD2(); // get either normal distance or diagonal distance
+                double totalWeight = (currentEntity.getG() + distance);
 
                 if(totalWeight < n.getG()){
                     n.setParent(currentEntity);
                     n.setG(totalWeight);
                     n.setF(n.getG() + n.calculateHeuristics(end));
 
-                    if(!open.contains(n)) open.add(n);
+                    if(!open.contains(n)) {
+                        open.add(n);
+                    }
                 }
             }
         }
         System.out.println("algorithm failed");
-        return null;
+        board.startTimer(closed, null);
     }
 
     private Entity calculateLowestF(ArrayList<Entity> open){
         Entity lowest = null;
-        Integer fScore = Integer.MAX_VALUE;
+        double fScore = Double.MAX_VALUE;
 
         for (Entity entity : open) {
             if (entity.getF() < fScore) {
@@ -67,4 +80,10 @@ public class AStar {
         return lowest;
     }
 
+    private boolean isNotInBounds(int x, int y){
+        return  x < 0 ||
+                x > board.getButtons()[0].length - 1 ||
+                y < 0 ||
+                y > board.getButtons().length - 1;
+    }
 }

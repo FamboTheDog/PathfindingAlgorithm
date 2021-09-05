@@ -3,11 +3,9 @@ package com.company.mouseListeners;
 import com.company.entities.Start;
 import com.company.view.Board;
 
-public class SetStart extends MouseListenerTemplate {
-    public SetStart(Board board){
-        super(board);
-        toSet = new Start();
-        board.setStart((Start) toSet);
+public class SetStart extends StartAndEndTemplate {
+    public SetStart(Board board, Start start){
+        super(board,start);
         name = "Start point";
     }
 }

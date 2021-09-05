@@ -4,6 +4,8 @@ import java.awt.*;
 
 public class Wall extends Entity{
 
+
+
     public Wall(){
         color = Color.black;
         d = Integer.MAX_VALUE;

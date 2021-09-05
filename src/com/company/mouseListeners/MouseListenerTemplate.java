@@ -4,6 +4,7 @@ import com.company.entities.EmptyBox;
 import com.company.entities.Entity;
 import com.company.view.Board;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -16,9 +17,7 @@ abstract public class MouseListenerTemplate extends MouseAdapter implements Mous
 
     protected Entity toSet;
     @Getter protected Color playerColor;
-    protected boolean placed = false;
     protected String name = "";
-
 
     public MouseListenerTemplate(Board board){
         this.board = board;
@@ -36,13 +35,10 @@ abstract public class MouseListenerTemplate extends MouseAdapter implements Mous
     }
 
     protected void mousePressedAction(MouseEvent e){
-        if(!placed) {
-            placed = true;
-            Point coordinates = calculatePosition(e);
-            board.getButtons()[coordinates.y][coordinates.x] = toSet;
-            toSet.setX(coordinates.x);
-            toSet.setY(coordinates.y);
-        }
+        Point coordinates = calculatePosition(e);
+        board.getButtons()[coordinates.y][coordinates.x] = toSet;
+        toSet.setX(coordinates.x);
+        toSet.setY(coordinates.y);
         board.repaint();
     }
 
